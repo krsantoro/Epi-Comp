@@ -1,0 +1,92 @@
+---
+title: "EpiModel"
+author: "Edyniesky"
+date: "3 de junio de 2016"
+output: html_document
+---
+
+## Modelos determinista compartimentales (MCD)
+
+Modelos compartimentales deterministas resolver ecuaciones diferenciales que representan los sistemas analíticos epidémicas en tiempo continuo. 
+
+# Modelo **SI**
+
+
+\begin{align}
+  \frac{dS}{dt} &= -\lambda S \notag \\[4pt]
+  \frac{dI}{dt} &= \lambda S
+\end{align}
+
+Donde $\lambda$ es la fuerza con la que acontece la infección y esta representada por $\frac{\beta c I}{N}$, $\beta$ es la probabilidad de transmisión por contacto,__*c*__ es la tasa de contacto por persona por unidad de tiempo, __*I*__ es el número de infectados en el tiempo __*t*__ y __*N*__ es el tamaño de la poblacion en el tiempo __*t*__
+
+La fuerza de la infección e multiplicada por el estado en que se emcuemtra **S** (susceptibles).
+
+-Para simular modelos deterministas **EpiModel** utiliza la función:
+
+--**dcm**
+
+Antes de ejecutar el modelo, es necesario para parametrizarlo. 
+
+En **param.dcm**, se introducen los parámetros del modelo epidémico. El argumento **inf.prob** establece la probabilidad de transmisión por acto, y **act.rate** establece los actos por persona por unidad de tiempo. La función **init.dcm** recoge las condiciones iniciales para el modelo, y dado que esten en el modelo SI es necesario especificar el número inicial **susceptibles** e **infectados** en $t_1$. 
+
+El control.dcm finalmente recoge otros controles de modelo estructural como el __tipo de modelo__ y el __número de pasos de la simulación__.
+
+```{r llamando EpiModel, include=FALSE}
+library(EpiModel)
+```
+
+
+```{r Parametros del Modelo}
+param <- param.dcm(inf.prob = 0.2, act.rate = 0.25)
+init <- init.dcm(s.num = 500, i.num = 1)
+control <- control.dcm(type = "SI", nsteps = 500)
+```
+
+```{r Resultados}
+mod <- dcm(param, init, control)
+
+print(mod)
+
+```
+
+--- __*s.num*__ representa la fracción de la poblacion susceptible.  
+--- __*i.num*__ representa el número de personas infectadas en la poblacion. 
+
+--- __*si.flow*__ es la poblacion que se mueve de __*S*__ para __*I*__.
+
+Em terminos epidemiológicos __*i.num*__ y __*si.flow*__ representan la prevalencia y la incidencia. 
+
+```{r Grafico}
+plot(mod)
+```
+
+Ahora podemos pedir un resumen del modelo em el tiempo específico del modelo. En el tiempo $t_{150}$ el 22,5% de la poblacion estaba efectada y la incidencia fue de 4,31 nuevos infectados. 
+
+```{r Resultados en tiempo expecifico }
+summary(mod, at = 150)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
